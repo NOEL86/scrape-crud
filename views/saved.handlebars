@@ -27,25 +27,27 @@
         </div>
     </div>
 
-    {{#each articles}}
+    {{#each articles}} {{if saved}}
 
     <div class="row">
         <div class="col-md-12">
             <div class="card" style="width: 100%;">
                 <img class="card-img-top" src="http://worldartsme.com/images/newspaper-wallpaper-clipart-1.jpg" alt="Card image cap">
                 <div class="card-body">
-                    <h5 class="card-title">{{this.title}}</h5>
-                    <a target="_blank" href="https://www.nytimes.com/" + {{this.url}}>https://www.nytimes.com/{{this.url}}</a>
+                    <a href="{{this.url}}">
+                        <h5 class="card-title">{{this.title}}</h5>
+                    </a>
                     <p class="card-text">{{this.summary}}
                     </p>
-                    <a id="saveButton" href="" class="btn btn-danger justify-content-end">Save Article</a>
+                    <a id="noteButton" href="" class="btn btn-dark justify-content-end">Notes</a>
+                    <a id="deleteSave" href="" class="btn btn-danger justify-content-end">Delete Saved</a>
 
                 </div>
             </div>
         </div>
     </div>
 
-    {{/each}}
+    {{/each}} {{/if}}
 
 
 

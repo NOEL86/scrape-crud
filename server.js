@@ -1,20 +1,11 @@
 var express = require("express");
-var mongojs = require("mongojs");
+var mongoose = require('mongoose');
 var cheerio = require("cheerio");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var exphbs = require("express-handlebars");
-// var PORT = process.env.PORT || 3000;
+
 var app = express();
-
-var databaseUrl = "articles";
-var collections = ["comments"];
-
-var db = mongojs(databaseUrl, collections);
-
-db.on("error", function (error) {
-    console.log("Database Error:", error);
-});
 
 
 var methodOverride = require('method-override');
@@ -38,12 +29,13 @@ app.set("view engine", "handlebars");
 var routes = require("./Routes/scraper_controller.js");
 app.use(routes);
 
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/articles";
+
+// Connect to the Mongo DB
+mongoose.connect(MONGODB_URI, {
+    useNewUrlParser: true
+});
+
 app.listen(3000, function () {
     console.log("App running on port 3000!");
 });
-
-
-
-// app.listen(PORT, function () {
-//     console.log("App now listening at localhost:" + PORT);
-// });
