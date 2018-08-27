@@ -4,6 +4,8 @@ var request = require("request");
 var cheerio = require("cheerio");
 var db = require('../models');
 
+//routes endpoints handlers
+
 router.get("/", function (req, res) {
     db.Headline.find({}).then(function (response) {
         console.log(response);
@@ -23,40 +25,43 @@ router.get("/all", function (req, res) {
         }
         var $ = cheerio.load(html);
         var results = [];
-
+        var id = 0;
         $("div.css-6p6lnl").each(function (i, element) {
 
             var title = $(element).text();
             var summary = $(element).find("p").text();
             var url = $(element).children().attr("href");
+            id++;
 
             var results = {
                 title: title,
                 url,
-                summary
+                summary,
+                id
             };
             db.Headline.create(results).then(function (response) {
                 console.log(response);
             })
         });
         console.log("+++++++++++++++++++");
-        res.send(results);
+        res.json(results);
     });
 });
 
 //is this body or params?? I am clicking on something in the body but trying to get the id of that item to alter it's boolean saved to true.
 router.post("/save/:id", function (req, res) {
-    console.log(req.body.id);
 
-    db.scraped.update(
+    db.Headline.findByIdAndUpdate(
         {
-            _id: mongojs.ObjectId(req.body.id)
+            _id: req.params.id
         },
         {
             $set: {
-                title: req.body.title,
-                saved: saved
+                saved: true
             }
+        },
+        {
+            new: true
         },
         function (err, saved) {
             if (err) {
@@ -70,15 +75,19 @@ router.post("/save/:id", function (req, res) {
 });
 
 router.get("/saved", function (req, res) {
-    db.Headline.find({ saved: true }).then(function (response) {
-        console.log(response);
-        res.render("saved.handlebars", {
-            articles: response
-        });
+    db.Headline.find({ saved: true }).then(function (err, response) {
+        if (err) throw err;
+
+        else {
+            console.log(response);
+            res.render("saved.handlebars", {
+                articles: response
+            });
+        }
     })
 });
 
-router.get("/note", function (req, res) {
+router.post("/note", function (req, res) {
     console.log(req.body);
     db.notes.insert(req.body, function (err, note) {
         if (err) {
@@ -89,20 +98,28 @@ router.get("/note", function (req, res) {
         }
     });
 });
+
 //again params or body?? I am getting this information from a user click function.
-router.get("/delete/:id", function (req, res) {
+router.post("/delete/:id", function (req, res) {
     db.Headline.remove(
         {
-            _id: mongojs.ObjectId(req.body.id)
+            _id: req.params.id
+        },
+        {
+            new: true
         },
         function (err, removed) {
+            if (err) {
+                console.log(err);
+            } else {
 
+            }
         }
     )
 });
 
 router.delete({ saved: false }, function (req, res) {
-    db.Headline.remove({ saved: false }),
+    db.Headline.remove({ saved: false }, { new: true }),
         function (err, removed) {
             if (err) {
                 console.log(err);
