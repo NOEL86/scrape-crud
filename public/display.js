@@ -1,23 +1,8 @@
 
 //can I say prepend new found articles to the same place in my handlebars file?
 
-$("#home").on("click", function (event) {
-    event.preventDefault();
-    console.log("home button function running");
-    window.location("/index.handlebars");
-    //go to the main page
-});
+console.log("yo");
 
-$("#savedPage").on("click", function (event) {
-    event.preventDefault();
-    console.log("saved page button hit");
-    $.get("/saved").then(function (err, res) {
-        if (err) throw err;
-        else {
-            res.send("/saved.handlebars");
-        }
-    })
-});
 
 $("#clearButton").on("click", function (event) {
     event.preventDefault();
@@ -29,7 +14,6 @@ $("#clearButton").on("click", function (event) {
 $("#scraperButton").on("click", function (event) {
     event.preventDefault();
     $.get("/all").then(function (err, data) {
-
         //grab this data and display it in the main page
         if (err) {
             console.log(err);
@@ -42,32 +26,37 @@ $("#scraperButton").on("click", function (event) {
 $("#saveButton").on("click", function (event) {
     event.preventDefault();
     var thisId = $(this).data("id");
-
-    $.post("/saved/" + thisId).then(function (saved) {
+    $.post("/save/" + thisId).then(function (saved) {
         console.log(saved);
         //grab this item and remove it 
         $("#" + thisId).hide();
 
     });
-
 });
 
-$("#noteButton").on("click", function (event) {
-    event.preventDefault();
-    var thisId = $(this).attr("data-id");
-
-    $.post("/note/" + thisId).then(function (note) {
-
-        console.log(note);
-    });
-});
-
-$("#noteButton").on("click", function (event) {
+$("#saveNote").on("click", function (event) {
     event.preventDefault();
     //add a note to an article
     //this is where we use populate
-})
+    var thisId = $(this).attr("data-id");
+    var note = $("#noteAdded").val().trim();
+    $.post("/headlines/" + thisId).then(function (response) {
+        $(".modal").hide();
+    })
+});
+
 $("#deleteSaved").on("click", function (event) {
     event.preventDefault();
     //on the saved page set saved to false
+});
+
+$("#removeButton").on("click", function (event) {
+    event.preventDefault();
+    var thisId = $(this).data("id");
+    $.post("/delete/" + thisId).then(function (removed) {
+        console.log(removed);
+        //grab this item and remove it 
+        $("#" + thisId).hide();
+
+    });
 });

@@ -14,9 +14,21 @@ router.get("/", function (req, res) {
         });
     })
 });
+router.get("/saved", function (req, res) {
+    db.Headline.find({ saved: true }).then(function (response, err) {
+        if (err) throw err;
+
+        else {
+            console.log(response);
+            res.render("saved", {
+                articles: response
+            });
+        }
+    })
+});
 
 router.get("/all", function (req, res) {
-
+    console.log("all route hit");
     request("https://www.nytimes.com/", function (err, response, html) {
 
         if (err) {
@@ -48,10 +60,9 @@ router.get("/all", function (req, res) {
     });
 });
 
-//is this body or params?? I am clicking on something in the body but trying to get the id of that item to alter it's boolean saved to true.
 router.post("/save/:id", function (req, res) {
 
-    db.Headline.findByIdAndUpdate(
+    db.Headline.findOneAndUpdate(
         {
             _id: req.params.id
         },
@@ -74,36 +85,31 @@ router.post("/save/:id", function (req, res) {
     );
 });
 
-router.get("/saved", function (req, res) {
-    db.Headline.find({ saved: true }).then(function (err, response) {
-        if (err) throw err;
+//this is creating a Note and adding it to the headlines and note dbs
+router.post("/headlines/:id", function (req, res) {
+    console.log(req.params.id);
 
-        else {
-            console.log(response);
-            res.render("saved.handlebars", {
-                articles: response
-            });
-        }
-    })
-});
-
-router.post("/note", function (req, res) {
-    console.log(req.body);
-    db.notes.insert(req.body, function (err, note) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(note);
-            res.send(note);
-        }
+    db.Note.create(req.body).then(function (note) {
+        var note = req.body
+        return db.Headline.findOneAndUpdate({ _id: req.params.id }, { note: db.Note._id }, { new: true }).then(function (article, err) {
+            res.send(article);
+            if (err) {
+                console.log(err);
+            }
+        })
     });
 });
 
 //again params or body?? I am getting this information from a user click function.
 router.post("/delete/:id", function (req, res) {
-    db.Headline.remove(
+    db.Headline.findOneAndUpdate(
         {
             _id: req.params.id
+        },
+        {
+            $set: {
+                saved: false
+            }
         },
         {
             new: true
@@ -112,22 +118,11 @@ router.post("/delete/:id", function (req, res) {
             if (err) {
                 console.log(err);
             } else {
-
-            }
-        }
-    )
-});
-
-router.delete({ saved: false }, function (req, res) {
-    db.Headline.remove({ saved: false }, { new: true }),
-        function (err, removed) {
-            if (err) {
-                console.log(err);
-            } else {
+                console.log(removed);
                 res.send(removed);
             }
         }
+    );
 });
-
 
 module.exports = router;
