@@ -4,7 +4,7 @@ var cheerio = require("cheerio");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var exphbs = require("express-handlebars");
-
+var PORT = process.env.PORT || 3000;
 var app = express();
 
 
@@ -36,6 +36,6 @@ mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true
 });
 
-app.listen(3000, function () {
+app.listen(PORT, function () {
     console.log("App running on port 3000!");
 });
