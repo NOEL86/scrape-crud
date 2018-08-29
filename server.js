@@ -30,7 +30,7 @@ var routes = require("./Routes/scraper_controller.js");
 app.use(routes);
 
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/articles";
-
+mongoose.Promise = Promise;
 // Connect to the Mongo DB
 mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true
