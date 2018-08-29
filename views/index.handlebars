@@ -29,7 +29,7 @@
 
     {{#each articles}}
 
-    <div id="headlines" class="row">
+    <div id="headlines" class="row allHeadlines">
         <div class="col-md-12">
             <div class="card" id={{this.id}} style="width: 100%;">
                 <img class="card-img-top" src="http://worldartsme.com/images/newspaper-wallpaper-clipart-1.jpg" alt="Card image cap">
@@ -38,7 +38,7 @@
                     <a target="_blank" href="https://www.nytimes.com/" + {{this.url}}>https://www.nytimes.com/{{this.url}}</a>
                     <p class="card-text">{{this.summary}}
                     </p>
-                    <a id="saveButton" data-id={{this.id}} href="" class="btn btn-danger justify-content-end">Save Article</a>
+                    <a id="saveButton" data-id={{this.id}} href="" class="btn btn-danger saveButton">Save Article</a>
 
                 </div>
             </div>

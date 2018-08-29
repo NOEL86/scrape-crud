@@ -27,7 +27,7 @@ router.get("/saved", function (req, res) {
     })
 });
 
-router.get("/all", function (req, res) {
+router.post("/all", function (req, res) {
     console.log("all route hit");
     request("https://www.nytimes.com/", function (err, response, html) {
 
@@ -38,6 +38,7 @@ router.get("/all", function (req, res) {
         var $ = cheerio.load(html);
         var results = [];
         var id = 0;
+
         $("div.css-6p6lnl").each(function (i, element) {
 
             var title = $(element).text();
@@ -45,7 +46,7 @@ router.get("/all", function (req, res) {
             var url = $(element).children().attr("href");
             id++;
 
-            var results = {
+            results = {
                 title: title,
                 url,
                 summary,
@@ -56,15 +57,18 @@ router.get("/all", function (req, res) {
             })
         });
         console.log("+++++++++++++++++++");
-        res.json(results);
+
+        res.send(response);
     });
 });
 
 router.post("/save/:id", function (req, res) {
 
+    var thisId = req.params.id;
+
     db.Headline.findOneAndUpdate(
         {
-            _id: req.params.id
+            _id: thisId
         },
         {
             $set: {
@@ -86,21 +90,21 @@ router.post("/save/:id", function (req, res) {
 });
 
 //this is creating a Note and adding it to the headlines and note dbs
-router.post("/headlines/:id", function (req, res) {
-    console.log(req.params.id);
+router.post("/headline", function (req, res) {
 
-    db.Note.create(req.body).then(function (note) {
+    db.Note.create(req.body).then(function (notes) {
         var note = req.body
-        return db.Headline.findOneAndUpdate({ _id: req.params.id }, { note: db.Note._id }, { new: true }).then(function (article, err) {
-            res.send(article);
-            if (err) {
-                console.log(err);
-            }
+        return db.Headline.findOneAndUpdate({}, { $push: { comments: note._id } }, { new: true });
+    })
+        .then(function (Headline) {
+            res.send(Headline);
         })
-    });
+        .catch(function (err) {
+            // If an error occurs, send it back to the client
+            res.json(err);
+        });
 });
 
-//again params or body?? I am getting this information from a user click function.
 router.post("/delete/:id", function (req, res) {
     db.Headline.findOneAndUpdate(
         {
@@ -124,5 +128,15 @@ router.post("/delete/:id", function (req, res) {
         }
     );
 });
+
+router.get("/notes", function (req, res) {
+    db.Headline.find({ comments: true }, function (err, results) {
+        if (err) throw err;
+        else {
+            console.log(results);
+            res.send(results);
+        }
+    })
+})
 
 module.exports = router;

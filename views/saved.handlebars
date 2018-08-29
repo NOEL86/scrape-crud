@@ -38,10 +38,10 @@
                     <a target="_blank" href="https://www.nytimes.com/" + {{this.url}}>https://www.nytimes.com/{{this.url}}</a>
                     <p class="card-text">{{this.summary}}
                     </p>
-                    <a id="removeButton" data-id={{this.id}} href="" class="btn btn-danger justify-content-end">Remove</a>
+                    <a data-id={{this.id}} href="/delete" class="btn btn-danger removeSaved">Remove</a>
 
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal{{this._id}}">
-                        Add Note
+                    <button type="button" class="btn btn-primary openNote" data-toggle="modal" data-target="#exampleModal{{this._id}}">
+                        Notes
                     </button>
                 </div>
             </div>
@@ -59,12 +59,11 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    {{this.title}}
                     <input id="noteAdded" id={{this.id}} class="input-group-text" type="text">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button id="saveNote" type="button" class="btn btn-primary">Save Note</button>
+                    <button type="button" class="btn btn-primary saveNote">Save Note</button>
                 </div>
             </div>
         </div>
