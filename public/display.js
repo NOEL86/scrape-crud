@@ -13,6 +13,7 @@ $("#clearButton").on("click", function (event) {
 
 $("#scraperButton").on("click", function (event) {
     event.preventDefault();
+
     $(".allHeadlines").hide();
     $.post("/all").then(function (err, data) {
         //grab this data and display it in the main page
@@ -50,9 +51,10 @@ $(".saveNote").on("click", function (event) {
 $(".openNote").on("click", function (event) {
     event.preventDefault();
     $.get("/notes").then(function (err, response) {
+        if (err) throw err;
         $(".modal-body").append(response);
     })
-})
+});
 
 $(".removeSaved").on("click", function (event) {
     event.preventDefault();

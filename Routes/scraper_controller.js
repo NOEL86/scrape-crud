@@ -29,6 +29,7 @@ router.get("/saved", function (req, res) {
 
 router.post("/all", function (req, res) {
     console.log("all route hit");
+
     request("https://www.nytimes.com/", function (err, response, html) {
 
         if (err) {
@@ -130,13 +131,19 @@ router.post("/delete/:id", function (req, res) {
 });
 
 router.get("/notes", function (req, res) {
-    db.Headline.find({ comments: true }, function (err, results) {
-        if (err) throw err;
-        else {
-            console.log(results);
-            res.send(results);
-        }
-    })
+    db.Headline.find({})
+        .populate("comments")
+        .then(function (notes) {
+
+
+            console.log(notes);
+            res.send(notes);
+
+        })
+        .catch(function (err) {
+            // If an error occurs, send it back to the client
+            res.json(err);
+        });
 })
 
 module.exports = router;
